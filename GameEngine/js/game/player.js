@@ -3,6 +3,7 @@ import GameObject from '../engine/gameobject.js';
 import Renderer from '../engine/renderer.js';
 import Physics from '../engine/physics.js';
 import Input from '../engine/input.js';
+import Sound from '../engine/sound.js';
 import { Images } from '../engine/resources.js';
 import Enemy from './enemy.js';
 import Platform from './platform.js';
@@ -18,6 +19,7 @@ class Player extends GameObject {
     this.addComponent(this.renderer);
     this.addComponent(new Physics({ x: 0, y: 0 }, { x: 0, y: 0 })); // Add physics
     this.addComponent(new Input()); // Add input for handling user input
+    this.addComponent(new Sound());
     // Initialize all the player specific properties
     this.direction = 1;
     this.lives = 3;
@@ -36,6 +38,7 @@ class Player extends GameObject {
   update(deltaTime) {
     const physics = this.getComponent(Physics); // Get physics component
     const input = this.getComponent(Input); // Get input component
+    const sound = this.getComponent(Sound);
 
     this.handleGamepadInput(input);
     
@@ -53,6 +56,7 @@ class Player extends GameObject {
     // Handle player jumping
     if (!this.isGamepadJump && input.isKeyDown('ArrowUp') && this.isOnPlatform) {
       this.startJump();
+      sound.jumpSound();
     }
 
     if (this.isJumping) {
@@ -65,6 +69,7 @@ class Player extends GameObject {
       if (physics.isColliding(collectible.getComponent(Physics))) {
         this.collect(collectible);
         this.game.removeGameObject(collectible);
+        sound.collectSound();
       }
     }
   
