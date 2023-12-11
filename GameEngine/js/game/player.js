@@ -5,6 +5,7 @@ import Physics from '../engine/physics.js';
 import Input from '../engine/input.js';
 import Sound from '../engine/sound.js';
 import { Images } from '../engine/resources.js';
+import { AudioFiles } from '../engine/resources.js';
 import Enemy from './enemy.js';
 import Platform from './platform.js';
 import Collectible from './collectible.js';
@@ -56,7 +57,7 @@ class Player extends GameObject {
     // Handle player jumping
     if (!this.isGamepadJump && input.isKeyDown('ArrowUp') && this.isOnPlatform) {
       this.startJump();
-      sound.jumpSound();
+      sound.playSound(AudioFiles.jump);
     }
 
     if (this.isJumping) {
@@ -69,7 +70,7 @@ class Player extends GameObject {
       if (physics.isColliding(collectible.getComponent(Physics))) {
         this.collect(collectible);
         this.game.removeGameObject(collectible);
-        sound.collectSound();
+        sound.playSound(AudioFiles.collect);
       }
     }
   
