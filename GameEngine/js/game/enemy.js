@@ -8,7 +8,7 @@ import Renderer from '../engine/renderer.js';
 import Physics from '../engine/physics.js';
 
 // Import the Images object from the 'engine' directory. This object contains all the game's image resources
-import {Images} from '../engine/resources.js';
+import Image from '../engine/images.js';
 
 // Import the Player and Platform classes from the current directory
 import Player from './player.js';
@@ -24,7 +24,7 @@ class Enemy extends GameObject {
     
     // Add a Renderer component to this enemy, responsible for rendering it in the game.
     // The renderer uses the color 'green', dimensions 50x50, and an enemy image from the Images object
-    this.addComponent(new Renderer('green', 50, 50, Images.enemy));
+    this.addComponent(new Renderer('green', 50, 50, new Image('enemy/enemy')));
     
     // Add a Physics component to this enemy, responsible for managing its physical interactions
     // Sets the initial velocity and acceleration

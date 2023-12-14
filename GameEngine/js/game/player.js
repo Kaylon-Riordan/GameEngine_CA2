@@ -3,20 +3,21 @@ import GameObject from '../engine/gameobject.js';
 import Renderer from '../engine/renderer.js';
 import Physics from '../engine/physics.js';
 import Input from '../engine/input.js';
-import Sound from '../engine/sound.js';
-import { Images } from '../engine/resources.js';
-import { AudioFiles } from '../engine/resources.js';
+import Sound from '../engine/Sounds.js';
+import Images from '../engine/images.js';
 import Enemy from './enemy.js';
 import Platform from './platform.js';
 import Collectible from './collectible.js';
 import ParticleSystem from '../engine/particleSystem.js';
+import CharacterStates from './CharacterStates.js';
+import Animation from '../engine/animation.js';
 
 // Defining a class Player that extends GameObject
 class Player extends GameObject {
   // Constructor initializes the game object and add necessary components
   constructor(x, y) {
     super(x, y); // Call parent's constructor
-    this.renderer = new Renderer('blue', 50, 50, Images.player); // Add renderer
+    this.renderer = new Renderer('blue', 50, 50, new Image()); // Add renderer
     this.addComponent(this.renderer);
     this.addComponent(new Physics({ x: 0, y: 0 }, { x: 0, y: 0 })); // Add physics
     this.addComponent(new Input()); // Add input for handling user input
@@ -33,6 +34,8 @@ class Player extends GameObject {
     this.isInvulnerable = false;
     this.isGamepadMovement = false;
     this.isGamepadJump = false;
+    this.state = CharacterStates.idle;
+    this.#createAnimations();
   }
 
   // The update function runs every frame and contains game logic
@@ -42,6 +45,7 @@ class Player extends GameObject {
     const sound = this.getComponent(Sound);
 
     this.handleGamepadInput(input);
+    this.renderer.image = (this.walkAnimation.getImage());
     
     // Handle player movement
     if (!this.isGamepadMovement && input.isKeyDown('ArrowRight')) {
@@ -57,7 +61,7 @@ class Player extends GameObject {
     // Handle player jumping
     if (!this.isGamepadJump && input.isKeyDown('ArrowUp') && this.isOnPlatform) {
       this.startJump();
-      sound.playSound(AudioFiles.jump);
+      sound.playSound('jump');
     }
 
     if (this.isJumping) {
@@ -70,7 +74,7 @@ class Player extends GameObject {
       if (physics.isColliding(collectible.getComponent(Physics))) {
         this.collect(collectible);
         this.game.removeGameObject(collectible);
-        sound.playSound(AudioFiles.collect);
+        sound.playSound('collect');
       }
     }
   
@@ -113,6 +117,16 @@ class Player extends GameObject {
     }
 
     super.update(deltaTime);
+  }
+
+  #createAnimations() {
+    this.idleAnimation = new Animation("player/idle/tile00?",6,6,CharacterStates.idle);
+    this.walkAnimation = new Animation("player/walk/tile00?",9,6,CharacterStates.walk);
+    this.runAnimation = new Animation("player/run/tile00?",8,6,CharacterStates.run);
+    this.jumpAnimation = new Animation("player/jump/tile00?",9,6,CharacterStates.jump);
+    this.attackAnimation = new Animation("player/attack/tile00?",5,6,CharacterStates.attack);
+    this.hurtAnimation = new Animation("player/hurt/tile00?",3,6,CharacterStates.hurt);
+    this.deadAnimation = new Animation("player/dead/tile00?",6,6,CharacterStates.die);
   }
 
   handleGamepadInput(input){
