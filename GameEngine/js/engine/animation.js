@@ -3,7 +3,7 @@ import Images from './images.js';
 
 class Animation extends Component { 
     images = [];
-    constructor(fileNameTemplate, numberOfImages, timerCount, state) {
+    constructor(fileNameTemplate, numberOfImages, timerCount, state, loop = true) {
         super();
             for (let i = 0; i < numberOfImages; i++) {
                 var fileName = fileNameTemplate.replace('?', i);
@@ -14,6 +14,7 @@ class Animation extends Component {
         this.timerCountDefault = timerCount;
         this.imageIndex = 0;
         this.state = state;
+        this.loop = loop;
     }
 
     isFor(state) {
@@ -35,7 +36,12 @@ class Animation extends Component {
             this.timerCount = this.timerCountDefault;
             this.imageIndex++;
             if (this.imageIndex >= this.images.length) {
-                this.imageIndex = 0;
+                if(this.loop) {
+                    this.imageIndex = 0; 
+                }
+                else {
+                    this.imageIndex = this.images.length - 1;
+                }
             }
         }
     }
