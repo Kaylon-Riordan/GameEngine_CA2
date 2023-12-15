@@ -16,11 +16,12 @@ class Renderer extends Component {
   draw(ctx) {
     // If an image is provided and it has finished loading, draw the image.
     if (this.image && this.image.complete) {
-      // Get the position and dimensions of the game object.
+      // Get the position of the game object.
       const x = this.gameObject.x;
-      const y = this.gameObject.y;
-      const w = this.width;
-      const h = this.height;
+      const y = this.gameObject.y + (75 - this.image.naturalHeight); // Only images of height 75 correctly display on ground level, so i offset the y position by the difference between the image height and 75.
+      // Set the natural width and height of the source image to be the width and height that will be rendered.
+      const w = this.image.naturalWidth;
+      const h = this.image.naturalHeight;
       // Check if the image should be flipped horizontally based on the direction of the game object.
       const flipX = this.gameObject.direction === 1; // 1 is right, -1 is left.
       if (!flipX) {

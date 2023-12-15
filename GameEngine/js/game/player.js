@@ -10,13 +10,14 @@ import Collectible from './collectible.js';
 import ParticleSystem from '../engine/particleSystem.js';
 import CharacterStates from './characterStates.js';
 import Animation from '../engine/animation.js';
+import Images from '../engine/images.js';
 
 // Defining a class Player that extends GameObject
 class Player extends GameObject {
   // Constructor initializes the game object and add necessary components
   constructor(x, y) {
     super(x, y); // Call parent's constructor
-    this.renderer = new Renderer('blue', 75, 75, new Image()); // Add renderer
+    this.renderer = new Renderer('blue', 75, 75, new Images('player/idle/tile001')); // Add renderer
     this.addComponent(this.renderer);
     this.addComponent(new Physics({ x: 0, y: 0 }, { x: 0, y: 0 })); // Add physics
     this.addComponent(new Input()); // Add input for handling user input
@@ -127,6 +128,8 @@ class Player extends GameObject {
     // Set state for animations
     if (this.isDead) {
       this.state = CharacterStates.die;
+    } else if (this.isInvulnerable) {
+      this.state = CharacterStates.hurt;
     } else if (!this.isOnPlatform) {
       this.state = CharacterStates.jump;
     } else if (input.isKeyDown('ShiftLeft') && (input.isKeyDown('KeyD') || input.isKeyDown('KeyA'))) {
