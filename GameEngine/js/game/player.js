@@ -5,7 +5,6 @@ import Physics from '../engine/physics.js';
 import Input from '../engine/input.js';
 import Sound from '../engine/sounds.js';
 import Enemy from './enemy.js';
-import Platform from './platform.js';
 import Collectible from './collectible.js';
 import ParticleSystem from '../engine/particleSystem.js';
 import CharacterStates from './characterStates.js';
@@ -26,9 +25,8 @@ class Player extends GameObject {
     this.direction = 1;
     this.lives = 3;
     this.score = 0;
-    this.isOnPlatform = false;
     this.isJumping = false;
-    this.jumpForce = 400;
+    this.jumpForce = 5;
     this.jumpTime = 0.3;
     this.jumpTimer = 0;
     this.isInvulnerable = false;
@@ -47,13 +45,13 @@ class Player extends GameObject {
 
     this.handleGamepadInput(input);
     this.renderer.image = this.animations.find((animation) => animation.isFor(this.state)).getImage();
-    
+
     // Handle player movement
     if (!this.isGamepadMovement && input.isKeyDown('KeyD')) {
-      physics.velocity.x = 100;
+      physics.velocity.x = 3;
       this.direction = -1;
     } else if (!this.isGamepadMovement && input.isKeyDown('KeyA')) {
-      physics.velocity.x = -100;
+      physics.velocity.x = -3;
       this.direction = 1;
     } else if (!this.isGamepadMovement) {
       physics.velocity.x = 0;
@@ -65,7 +63,7 @@ class Player extends GameObject {
     }
 
     // Handle player jumping
-    if (!this.isGamepadJump && input.isKeyDown('Space') && this.isOnPlatform) {
+    if (!this.isGamepadJump && input.isKeyDown('Space') && physics.isOnPlatform) {
       this.startJump();
       sound.playSound('jump');
     }
@@ -89,20 +87,6 @@ class Player extends GameObject {
     for (const enemy of enemies) {
       if (physics.isColliding(enemy.getComponent(Physics))) {
         this.collidedWithEnemy();
-      }
-    }
-  
-    // Handle collisions with platforms
-    this.isOnPlatform = false;  // Reset this before checking collisions with platforms
-    const platforms = this.game.gameObjects.filter((obj) => obj instanceof Platform);
-    for (const platform of platforms) {
-      if (physics.isColliding(platform.getComponent(Physics))) {
-        if (!this.isJumping) {
-          physics.velocity.y = 0;
-          physics.acceleration.y = 0;
-          this.y = platform.y - this.renderer.height;
-          this.isOnPlatform = true;
-        }
       }
     }
   
@@ -130,7 +114,7 @@ class Player extends GameObject {
       this.state = CharacterStates.die;
     } else if (this.isInvulnerable) {
       this.state = CharacterStates.hurt;
-    } else if (!this.isOnPlatform) {
+    } else if (!physics.isOnPlatform) {
       this.state = CharacterStates.jump;
     } else if (input.isKeyDown('ShiftLeft') && (input.isKeyDown('KeyD') || input.isKeyDown('KeyA'))) {
       this.state = CharacterStates.run;
@@ -145,13 +129,13 @@ class Player extends GameObject {
   }
 
   #createAnimations() {
-    this.idleAnimation = new Animation("player/idle/tile00?",6,6,CharacterStates.idle);
-    this.walkAnimation = new Animation("player/walk/tile00?",9,6,CharacterStates.walk);
-    this.runAnimation = new Animation("player/run/tile00?",8,6,CharacterStates.run);
-    this.jumpAnimation = new Animation("player/jump/tile00?",6,10,CharacterStates.jump,false);
-    this.attackAnimation = new Animation("player/attack/tile00?",5,6,CharacterStates.attack);
-    this.hurtAnimation = new Animation("player/hurt/tile00?",3,6,CharacterStates.hurt);
-    this.dieAnimation = new Animation("player/die/tile00?",6,6,CharacterStates.die,false);
+    this.idleAnimation = new Animation("player/idle/tile00?",6,9,CharacterStates.idle);
+    this.walkAnimation = new Animation("player/walk/tile00?",9,9,CharacterStates.walk);
+    this.runAnimation = new Animation("player/run/tile00?",8,9,CharacterStates.run);
+    this.jumpAnimation = new Animation("player/jump/tile00?",6,9,CharacterStates.jump,false);
+    this.attackAnimation = new Animation("player/attack/tile00?",5,9,CharacterStates.attack);
+    this.hurtAnimation = new Animation("player/hurt/tile00?",3,9,CharacterStates.hurt);
+    this.dieAnimation = new Animation("player/die/tile00?",6,9,CharacterStates.die,false);
     this.animations = [ this.idleAnimation, this.walkAnimation, this.runAnimation, this.jumpAnimation, this.attackAnimation, this.hurtAnimation, this.dieAnimation ];
   }
   
@@ -184,7 +168,7 @@ class Player extends GameObject {
       }
       
       // Handle jump, using gamepad button 0 (typically the 'A' button on most gamepads)
-      if (input.isGamepadButtonDown(0) && this.isOnPlatform) {
+      if (input.isGamepadButtonDown(0) && physics.isOnPlatform) {
         this.isGamepadJump = true;
         this.startJump();
       }
@@ -192,12 +176,13 @@ class Player extends GameObject {
   }
 
   startJump() {
+    const physics = this.getComponent(Physics); // Get physics component
     // Initiate a jump if the player is on a platform
-    if (this.isOnPlatform) { 
+    if (physics.isOnPlatform) { 
       this.isJumping = true;
       this.jumpTimer = this.jumpTime;
       this.getComponent(Physics).velocity.y = -this.jumpForce;
-      this.isOnPlatform = false;
+      physics.isOnPlatform = false;
     }
   }
   
@@ -241,7 +226,6 @@ class Player extends GameObject {
     this.getComponent(Physics).velocity = { x: 0, y: 0 };
     this.getComponent(Physics).acceleration = { x: 0, y: 0 };
     this.direction = 1;
-    this.isOnPlatform = false;
     this.isJumping = false;
     this.jumpTimer = 0;
   }
