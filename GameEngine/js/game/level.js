@@ -5,7 +5,7 @@ import Enemy from './enemy.js';
 import PlayerUI from './playerUI.js';
 import Platform from './platform.js';
 import Collectible from './collectible.js';
-import Images from '../engine/images.js';
+import Sounds from '../engine/sounds.js';
 
 // Define a class Level that extends the Game class from the engine
 class Level extends Game {
@@ -15,7 +15,7 @@ class Level extends Game {
     // Call the constructor of the superclass (Game) with the canvas ID
     super(canvasId);
 
-        // Define the platform's width and the gap between platforms
+    // Define the platform's width and the gap between platforms
     const platformWidth = 480;
     const gap = 320;
 
@@ -55,6 +55,9 @@ class Level extends Game {
 
     // Add the player UI object to the game
     this.addGameObject(new PlayerUI(10, 10));
+
+    this.sounds = new Sounds();
+    this.sounds.playSound('music', true);
   }
   
 }

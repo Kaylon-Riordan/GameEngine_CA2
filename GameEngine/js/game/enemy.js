@@ -43,6 +43,7 @@ class Enemy extends GameObject {
     this.isDead = false;
     this.isInvulnerable = false;
     this.state = CharacterStates.idle;
+    this.isAttacking = false;
   }
 
   // Define an update method that will run every frame of the game. It takes deltaTime as an argument
@@ -80,16 +81,18 @@ class Enemy extends GameObject {
     const player = this.game.gameObjects.find(obj => obj instanceof Player);
     if (physics.isColliding(player.getComponent(Physics))) {
       player.collidedWithEnemy();
+      this.isAttacking = true;
+      setTimeout(() => {
+        this.isAttacking = false;
+      }, 1000);
     }
 
     // Call the update method of the superclass (GameObject), passing along deltaTime
     super.update(deltaTime);
 
 
-    if (this.isDead) {
-      this.state = CharacterStates.die;
-    } else if (this.isInvulnerable) {
-      this.state = CharacterStates.hurt;
+    if (this.isAttacking) {
+      this.state = CharacterStates.attack;
     } else if (physics.velocity.x !== 0) {
       this.state = CharacterStates.walk;
     } else {
@@ -103,9 +106,7 @@ class Enemy extends GameObject {
     this.idleAnimation = new Animation("enemy/idle/tile00?",7,12,CharacterStates.idle);
     this.walkAnimation = new Animation("enemy/walk/tile00?",7,12,CharacterStates.walk);
     this.attackAnimation = new Animation("enemy/attack/tile00?",4 ,12,CharacterStates.attack);
-    this.hurtAnimation = new Animation("enemy/hurt/tile00?",3,12,CharacterStates.hurt);
-    this.dieAnimation = new Animation("enemy/die/tile00?",5,12,CharacterStates.die,false);
-    this.animations = [ this.idleAnimation, this.walkAnimation, this.attackAnimation, this.hurtAnimation, this.dieAnimation ];
+    this.animations = [ this.idleAnimation, this.walkAnimation, this.attackAnimation ];
   }
 }
 

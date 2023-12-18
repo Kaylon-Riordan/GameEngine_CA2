@@ -39,8 +39,7 @@ class Player extends GameObject {
   update(deltaTime) {
     const physics = this.getComponent(Physics); // Get physics component
     const input = this.getComponent(Input); // Get input component
-    const sound = this.getComponent(Sound);
-
+    const sound = this.getComponent(Sound); // Get sound component
     this.renderer.image = this.animations.find((animation) => animation.isFor(this.state)).getImage();
 
     if(!this.isDead) {
@@ -139,10 +138,9 @@ class Player extends GameObject {
     this.walkAnimation = new Animation("player/walk/tile00?",9,12,CharacterStates.walk);
     this.runAnimation = new Animation("player/run/tile00?",8,12,CharacterStates.run);
     this.jumpAnimation = new Animation("player/jump/tile00?",6,12,CharacterStates.jump,false);
-    this.attackAnimation = new Animation("player/attack/tile00?",5,12,CharacterStates.attack);
     this.hurtAnimation = new Animation("player/hurt/tile00?",3,12,CharacterStates.hurt);
     this.dieAnimation = new Animation("player/die/tile00?",6,12,CharacterStates.die,false);
-    this.animations = [ this.idleAnimation, this.walkAnimation, this.runAnimation, this.jumpAnimation, this.attackAnimation, this.hurtAnimation, this.dieAnimation ];
+    this.animations = [ this.idleAnimation, this.walkAnimation, this.runAnimation, this.jumpAnimation, this.hurtAnimation, this.dieAnimation ];
   }
 
   startJump() {
@@ -165,10 +163,12 @@ class Player extends GameObject {
   }
 
   collidedWithEnemy() {
+    let sound = this.getComponent(Sound);
     // Checks collision with an enemy and reduce player's life if not invulnerable
     if (!this.isInvulnerable) {
       this.lives--;
       this.isInvulnerable = true;
+      sound.playSound('hurt');
       // Make player vulnerable again after 2 seconds
       setTimeout(() => {
         this.isInvulnerable = false;
@@ -198,6 +198,7 @@ class Player extends GameObject {
     this.direction = 1;
     this.isJumping = false;
     this.jumpTimer = 0;
+    this.collidedWithEnemy();
   }
 
   resetGame() {

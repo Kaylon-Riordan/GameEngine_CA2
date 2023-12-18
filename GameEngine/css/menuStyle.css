@@ -2,7 +2,14 @@ body {
     background-color: white; /* Red background color */
     text-align: center;
     font-size: 100px;
-    color: black;
+    color: White;
+    -webkit-text-stroke-width: 3px;
+    -webkit-text-stroke-color: black;
+
+    background-image: url("../resources/images/menu.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+
     .button {
         background-color: black;
         color: #ffffff;
