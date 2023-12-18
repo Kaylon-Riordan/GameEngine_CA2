@@ -8,11 +8,16 @@ import Renderer from '../engine/renderer.js';
 import Physics from '../engine/physics.js';
 
 // Import the Images object from the 'engine' directory. This object contains all the game's image resources
-import Image from '../engine/images.js';
+import Images from '../engine/images.js';
 
 // Import the Player and Platform classes from the current directory
 import Player from './player.js';
-import Platform from './platform.js';
+
+// Import the CharacterStates object from the current directory
+import CharacterStates from './characterStates.js';
+
+// Import the Animation class from the 'engine' directory
+import Animation from '../engine/animation.js';
 
 // Define a new class, Enemy, which extends (i.e., inherits from) GameObject
 class Enemy extends GameObject {
@@ -24,16 +29,20 @@ class Enemy extends GameObject {
     
     // Add a Renderer component to this enemy, responsible for rendering it in the game.
     // The renderer uses the color 'green', dimensions 50x50, and an enemy image from the Images object
-    this.addComponent(new Renderer('green', 50, 50, new Image('enemy/enemy')));
-    
+    this.renderer = new Renderer('blue', 75, 75, new Images('enemy/idle/tile001')); // Add renderer
+    this.addComponent(this.renderer);
     // Add a Physics component to this enemy, responsible for managing its physical interactions
     // Sets the initial velocity and acceleration
-    this.addComponent(new Physics({ x: 50, y: 0 }, { x: 0, y: 0 }));
+    this.addComponent(new Physics({ x: 0, y: 0 }, { x: 0, y: 0 }));
     
     // Initialize variables related to enemy's movement
     this.movementDistance = 0;
-    this.movementLimit = 100;
+    this.movementLimit = 3;
     this.movingRight = true;
+    this.createAnimations();
+    this.isDead = false;
+    this.isInvulnerable = false;
+    this.state = CharacterStates.idle;
   }
 
   // Define an update method that will run every frame of the game. It takes deltaTime as an argument
@@ -46,7 +55,7 @@ class Enemy extends GameObject {
     if (this.movingRight) {
       // If it hasn't reached its movement limit, make it move right
       if (this.movementDistance < this.movementLimit) {
-        physics.velocity.x = 50;
+        physics.velocity.x = 2;
         this.movementDistance += Math.abs(physics.velocity.x) * deltaTime;
         this.getComponent(Renderer).gameObject.direction = 1;
       } else {
@@ -57,7 +66,7 @@ class Enemy extends GameObject {
     } else {
       // If it hasn't reached its movement limit, make it move left
       if (this.movementDistance < this.movementLimit) {
-        physics.velocity.x = -50;
+        physics.velocity.x = -2;
         this.movementDistance += Math.abs(physics.velocity.x) * deltaTime;
         this.getComponent(Renderer).gameObject.direction = -1;
       } else {
@@ -73,21 +82,30 @@ class Enemy extends GameObject {
       player.collidedWithEnemy();
     }
 
-    // Check if the enemy is colliding with any platforms
-    const platforms = this.game.gameObjects.filter(obj => obj instanceof Platform);
-    this.isOnPlatform = false;
-    for (const platform of platforms) {
-      if (physics.isColliding(platform.getComponent(Physics))) {
-        // If it is, stop its vertical movement and position it on top of the platform
-        physics.velocity.y = 0;
-        physics.acceleration.y = 0;
-        this.y = platform.y - this.getComponent(Renderer).height;
-        this.isOnPlatform = true;
-      }
-    }
-
     // Call the update method of the superclass (GameObject), passing along deltaTime
     super.update(deltaTime);
+
+
+    if (this.isDead) {
+      this.state = CharacterStates.die;
+    } else if (this.isInvulnerable) {
+      this.state = CharacterStates.hurt;
+    } else if (physics.velocity.x !== 0) {
+      this.state = CharacterStates.walk;
+    } else {
+      this.state = CharacterStates.idle;
+    }
+
+    this.renderer.image = this.animations.find((animation) => animation.isFor(this.state)).getImage();
+  }
+
+  createAnimations() {
+    this.idleAnimation = new Animation("enemy/idle/tile00?",7,12,CharacterStates.idle);
+    this.walkAnimation = new Animation("enemy/walk/tile00?",7,12,CharacterStates.walk);
+    this.attackAnimation = new Animation("enemy/attack/tile00?",4 ,12,CharacterStates.attack);
+    this.hurtAnimation = new Animation("enemy/hurt/tile00?",3,12,CharacterStates.hurt);
+    this.dieAnimation = new Animation("enemy/die/tile00?",5,12,CharacterStates.die,false);
+    this.animations = [ this.idleAnimation, this.walkAnimation, this.attackAnimation, this.hurtAnimation, this.dieAnimation ];
   }
 }
 

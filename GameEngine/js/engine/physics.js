@@ -51,21 +51,17 @@ class Physics extends Component {
   // Following method is mostly written by copilot
   // Method to move the game object and check for collisions.
   moveAndCheckCollision(axis) {
-    let velocity = this.velocity[axis];
     let oldPosition = this.gameObject[axis];
-    
     const platforms = this.gameObject.game.gameObjects.filter((obj) => obj instanceof Platform);
     this.isOnPlatform = false;
-    
-    for(let i = 0; i < Math.abs(velocity); i++) {
-      this.gameObject[axis] += Math.sign(velocity);
-      
+    for(let i = 0; i < Math.abs(this.velocity[axis]); i++) {
+      this.gameObject[axis] += Math.sign(this.velocity[axis]);
       for(const platform of platforms) {
         const physics = platform.getComponent(Physics);
         if(physics.isColliding(this)) {
           this.gameObject[axis] = oldPosition;
-          velocity = 0;
-          if(axis === 'y' && velocity >= 0) {
+          this.velocity[axis] = 0;
+          if(axis === 'y' && this.velocity[axis] >= 0) {
             const playerBottom = this.gameObject.y + this.gameObject.getComponent(Renderer).height;
             const platformTop = platform.y;
             if(playerBottom <= platformTop) {
@@ -75,11 +71,8 @@ class Physics extends Component {
           break;
         }
       }
-      
       oldPosition = this.gameObject[axis];
     }
-    
-    this.velocity[axis] = velocity;
   }
 }
 

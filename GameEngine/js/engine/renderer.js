@@ -1,15 +1,17 @@
 // Import the required modules and classes.
+import Platform from '../game/platform.js';
 import Component from './component.js';
 
 // The Renderer class extends Component and handles the visual representation of a game object.
 class Renderer extends Component {
   // The constructor initializes the renderer component with optional color, width, height, and image.
-  constructor(color = 'white', width = 50, height = 50, image = null) {
+  constructor(color = 'white', width = 50, height = 50, image = null, offset = 75) {
     super(); // Call the parent constructor.
     this.color = color; // Initialize the color.
     this.width = width; // Initialize the width.
     this.height = height; // Initialize the height.
     this.image = image; // Initialize the image.
+    this.offset = offset; // Initialize the offset.
   }
 
   // The draw method handles rendering the game object on the canvas.
@@ -18,12 +20,12 @@ class Renderer extends Component {
     if (this.image && this.image.complete) {
       // Get the position of the game object.
       const x = this.gameObject.x;
-      const y = this.gameObject.y + (75 - this.image.naturalHeight); // Only images of height 75 correctly display on ground level, so i offset the y position by the difference between the image height and 75.
+      let y = this.gameObject.y + (this.offset  - this.image.naturalHeight); // Offset the image by the offset property, which is the value each gameObject needs to display properly at ground level, i haven't found what causes diffenet gameObject's to require different calues, the player and enemies need 75 but platforms need 512.
       // Set the natural width and height of the source image to be the width and height that will be rendered.
       const w = this.image.naturalWidth;
       const h = this.image.naturalHeight;
       // Check if the image should be flipped horizontally based on the direction of the game object.
-      const flipX = this.gameObject.direction === 1; // 1 is right, -1 is left.
+      const flipX = this.gameObject.direction === -1; // 1 is right, -1 is left.
       if (!flipX) {
         // If the image should not be flipped, draw it as is.
         ctx.drawImage(this.image, x, y, w, h);

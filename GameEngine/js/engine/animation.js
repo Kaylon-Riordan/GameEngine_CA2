@@ -26,11 +26,11 @@ class Animation extends Component {
     }
 
     getImage() {
-        this.#setImageIndex();
+        this.setImageIndex();
         return this.images[this.imageIndex];
     }
 
-    #setImageIndex() {
+    setImageIndex() {
         this.timerCount--;
         if (this.timerCount == 0) {
             this.timerCount = this.timerCountDefault;

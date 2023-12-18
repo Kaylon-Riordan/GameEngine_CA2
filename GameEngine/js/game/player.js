@@ -26,15 +26,13 @@ class Player extends GameObject {
     this.lives = 3;
     this.score = 0;
     this.isJumping = false;
-    this.jumpForce = 5;
+    this.jumpForce = 3;
     this.jumpTime = 0.3;
     this.jumpTimer = 0;
     this.isInvulnerable = false;
-    this.isGamepadMovement = false;
-    this.isGamepadJump = false;
     this.isDead = false;
     this.state = CharacterStates.idle;
-    this.#createAnimations();
+    this.createAnimations();
   }
 
   // The update function runs every frame and contains game logic
@@ -43,33 +41,37 @@ class Player extends GameObject {
     const input = this.getComponent(Input); // Get input component
     const sound = this.getComponent(Sound);
 
-    this.handleGamepadInput(input);
     this.renderer.image = this.animations.find((animation) => animation.isFor(this.state)).getImage();
 
+    if(!this.isDead) {
     // Handle player movement
-    if (!this.isGamepadMovement && input.isKeyDown('KeyD')) {
-      physics.velocity.x = 3;
-      this.direction = -1;
-    } else if (!this.isGamepadMovement && input.isKeyDown('KeyA')) {
-      physics.velocity.x = -3;
-      this.direction = 1;
-    } else if (!this.isGamepadMovement) {
+      if (input.isKeyDown('KeyD')) {
+        physics.velocity.x = 2;
+        this.direction = 1;
+      } else if (input.isKeyDown('KeyA')) {
+        physics.velocity.x = -2;
+        this.direction = -1;
+      } else {
+        physics.velocity.x = 0;
+      }
+
+      // Handle player sprinting
+      if (input.isKeyDown('ShiftLeft')) {
+        physics.velocity.x *= 2;
+      }
+
+      // Handle player jumping
+      if (input.isKeyDown('Space') && physics.isOnPlatform) {
+        this.startJump();
+        sound.playSound('jump');
+      }
+
+      if (this.isJumping) {
+        this.updateJump(deltaTime);
+      }
+    }
+    else {
       physics.velocity.x = 0;
-    }
-
-    // Handle player sprinting
-    if (input.isKeyDown('ShiftLeft')) {
-      physics.velocity.x *= 2;
-    }
-
-    // Handle player jumping
-    if (!this.isGamepadJump && input.isKeyDown('Space') && physics.isOnPlatform) {
-      this.startJump();
-      sound.playSound('jump');
-    }
-
-    if (this.isJumping) {
-      this.updateJump(deltaTime);
     }
 
     // Handle collisions with collectibles
@@ -98,13 +100,17 @@ class Player extends GameObject {
     // Check if player has no lives left
     if (this.lives <= 0 ) {
       this.isDead = true;
-      //location.reload();
+      setTimeout(() => {
+        window.location.href = 'deathScreen.html';
+      }, 1000);
     }
 
     // Check if player has collected all collectibles
-    if (this.score >= 3) {
+    if (this.score >= 5) {
       console.log('You win!');
-      //location.reload();d
+      setTimeout(() => {
+        window.location.href = 'winScreen.html';
+      }, 1000);
     }
 
     super.update(deltaTime);
@@ -128,51 +134,15 @@ class Player extends GameObject {
     }
   }
 
-  #createAnimations() {
-    this.idleAnimation = new Animation("player/idle/tile00?",6,9,CharacterStates.idle);
-    this.walkAnimation = new Animation("player/walk/tile00?",9,9,CharacterStates.walk);
-    this.runAnimation = new Animation("player/run/tile00?",8,9,CharacterStates.run);
-    this.jumpAnimation = new Animation("player/jump/tile00?",6,9,CharacterStates.jump,false);
-    this.attackAnimation = new Animation("player/attack/tile00?",5,9,CharacterStates.attack);
-    this.hurtAnimation = new Animation("player/hurt/tile00?",3,9,CharacterStates.hurt);
-    this.dieAnimation = new Animation("player/die/tile00?",6,9,CharacterStates.die,false);
+  createAnimations() {
+    this.idleAnimation = new Animation("player/idle/tile00?",6,12,CharacterStates.idle);
+    this.walkAnimation = new Animation("player/walk/tile00?",9,12,CharacterStates.walk);
+    this.runAnimation = new Animation("player/run/tile00?",8,12,CharacterStates.run);
+    this.jumpAnimation = new Animation("player/jump/tile00?",6,12,CharacterStates.jump,false);
+    this.attackAnimation = new Animation("player/attack/tile00?",5,12,CharacterStates.attack);
+    this.hurtAnimation = new Animation("player/hurt/tile00?",3,12,CharacterStates.hurt);
+    this.dieAnimation = new Animation("player/die/tile00?",6,12,CharacterStates.die,false);
     this.animations = [ this.idleAnimation, this.walkAnimation, this.runAnimation, this.jumpAnimation, this.attackAnimation, this.hurtAnimation, this.dieAnimation ];
-  }
-  
-
-  handleGamepadInput(input){
-    const gamepad = input.getGamepad(); // Get the gamepad input
-    const physics = this.getComponent(Physics); // Get physics component
-    if (gamepad) {
-      // Reset the gamepad flags
-      this.isGamepadMovement = false;
-      this.isGamepadJump = false;
-
-      // Handle movement
-      const horizontalAxis = gamepad.axes[0];
-      // Move right
-      if (horizontalAxis > 0.1) {
-        this.isGamepadMovement = true;
-        physics.velocity.x = 100;
-        this.direction = -1;
-      } 
-      // Move left
-      else if (horizontalAxis < -0.1) {
-        this.isGamepadMovement = true;
-        physics.velocity.x = -100;
-        this.direction = 1;
-      } 
-      // Stop
-      else {
-        physics.velocity.x = 0;
-      }
-      
-      // Handle jump, using gamepad button 0 (typically the 'A' button on most gamepads)
-      if (input.isGamepadButtonDown(0) && physics.isOnPlatform) {
-        this.isGamepadJump = true;
-        this.startJump();
-      }
-    }
   }
 
   startJump() {
@@ -202,7 +172,7 @@ class Player extends GameObject {
       // Make player vulnerable again after 2 seconds
       setTimeout(() => {
         this.isInvulnerable = false;
-      }, 2000);
+      }, 1000);
     }
   }
 

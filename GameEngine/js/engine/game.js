@@ -25,10 +25,10 @@ class Game {
     this.camera = new Camera(null, this.canvas.width, this.canvas.height);
   }
 
-  // This method resizes the canvas to fill the window, with a small margin.
+  // This method resizes the canvas to fill the window.
   resizeCanvas() {
-    this.canvas.width = window.innerWidth - 50;
-    this.canvas.height = window.innerHeight - 50;
+    this.canvas.width = window.innerWidth;
+    this.canvas.height = window.innerHeight;
   }
 
   // This method starts the game loop.

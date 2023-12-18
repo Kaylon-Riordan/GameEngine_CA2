@@ -7,8 +7,3 @@ body {
     height: 100vh;
     background-color: #ff0000; /* Red background color */
 }
-
-/* Add border to the canvas element */
-canvas {
-    border: 1px solid #fff; /* 1 pixel solid white border */
-}
