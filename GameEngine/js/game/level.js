@@ -15,47 +15,11 @@ class Level extends Game {
     // Call the constructor of the superclass (Game) with the canvas ID
     super(canvasId);
 
-    // Define the platform's width and the gap between platforms
-    const platformWidth = 480;
-    const gap = 320;
-
-    const rand1 = Math.floor((Math.random() * 140) + 1);
-    const rand2 = Math.floor((Math.random() * 140) + 1);
-    const rand3 = Math.floor((Math.random() * 140) + 1);
-    const rand4 = Math.floor((Math.random() * 140) + 1);
-    const rand5 = Math.floor((Math.random() * 140) + 1);
-    const rand6 = Math.floor((Math.random() * 140) + 1);
-
-    // Create platforms and add them to the game
-    const platforms = [
-      new Platform(0, this.canvas.height + 60 - rand1, platformWidth, 20),
-      new Platform(platformWidth + gap, this.canvas.height + 60 - rand2, platformWidth, 20),
-      new Platform(2 * (platformWidth + gap), this.canvas.height + 60 - rand3, platformWidth, 20),
-      new Platform(3 * (platformWidth + gap), this.canvas.height + 60 - rand4, platformWidth, 20),
-      new Platform(4 * (platformWidth + gap), this.canvas.height + 60 - rand5, platformWidth, 20),
-      new Platform(5 * (platformWidth + gap), this.canvas.height + 60 - rand6, platformWidth, 20),
-    ];
-    for (const platform of platforms) {
-      this.addGameObject(platform);
-    }
-
-    // Create enemies and add them to the game
-    this.addGameObject(new Enemy((platformWidth + gap) + 150, this.canvas.height - 150 - rand2));
-    this.addGameObject(new Enemy(2 * (platformWidth + gap) + 150, this.canvas.height - 150 - rand3));
-    this.addGameObject(new Enemy(3 * (platformWidth + gap) + 150, this.canvas.height - 150 - rand4));
-    this.addGameObject(new Enemy(4 * (platformWidth + gap) + 150, this.canvas.height - 150 - rand5));
-    this.addGameObject(new Enemy(5 * (platformWidth + gap) + 150, this.canvas.height - 150 - rand6));
-
-    // Create collectibles and add them to the game
-    this.addGameObject(new Collectible((platformWidth + gap) + 220, this.canvas.height - 150 - rand2, 20, 20));
-    this.addGameObject(new Collectible(2 * (platformWidth + gap) + 220, this.canvas.height - 150 - rand3, 20, 20));
-    this.addGameObject(new Collectible(3 * (platformWidth + gap) + 220, this.canvas.height - 150 - rand4, 20, 20));
-    this.addGameObject(new Collectible(4 * (platformWidth + gap) + 220, this.canvas.height - 150 - rand5, 20, 20));
-    this.addGameObject(new Collectible(5 * (platformWidth + gap) + 220, this.canvas.height - 150 - rand6, 20, 20));
-
     // Create a player object and add it to the game
-    const player = new Player(240, this.canvas.height - 150 - rand1);
+    const player = new Player(240, this.canvas.height - 600);
     this.addGameObject(player);
+    this.player = player;
+    this.player.level = this;
     
     // Set the game's camera target to the player
     this.camera.target = player;
@@ -65,8 +29,22 @@ class Level extends Game {
 
     this.sounds = new Sounds();
     this.sounds.playSound('music', true);
+
+    let towers = 0;
+    this.towers = towers;
   }
-  
+  update() {
+    const platformWidth = 480;
+    const gap = 320;
+    super.update();
+    if((this.player.x) >= ((this.towers - 2) * (platformWidth + gap))) {
+      let rand = Math.floor((Math.random() * 140) + 1);
+      this.addGameObject(new Platform(this.towers * (platformWidth + gap), this.canvas.height + 60 - rand, platformWidth, 20));
+      this.addGameObject(new Collectible(this.towers * (platformWidth + gap) + 150 + rand, this.canvas.height - 150 - rand, 20, 20));
+      this.addGameObject(new Enemy(this.towers * (platformWidth + gap) + 70, this.canvas.height - 150 - rand));
+      this.towers++;
+    }
+  }
 }
 
 // Export the Level class as the default export of this module

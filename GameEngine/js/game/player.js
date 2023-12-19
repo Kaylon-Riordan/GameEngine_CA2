@@ -101,14 +101,7 @@ class Player extends GameObject {
       this.isDead = true;
       setTimeout(() => {
         window.location.href = 'deathScreen.html';
-      }, 1000);
-    }
-
-    // Check if player has collected all collectibles
-    if (this.score >= 5) {
-      console.log('You win!');
-      setTimeout(() => {
-        window.location.href = 'winScreen.html';
+        alert('Final Score: ' + this.score);
       }, 1000);
     }
 
@@ -191,8 +184,8 @@ class Player extends GameObject {
 
   resetPlayerState() {
     // Reset the player's state, repositioning it and nullifying movement
-    this.x = this.game.canvas.width / 2;
-    this.y = this.game.canvas.height / 2;
+    this.x = ((this.level.towers - 2) * 800) - 580;
+    this.y = this.game.canvas.height - 600;
     this.getComponent(Physics).velocity = { x: 0, y: 0 };
     this.getComponent(Physics).acceleration = { x: 0, y: 0 };
     this.direction = 1;
