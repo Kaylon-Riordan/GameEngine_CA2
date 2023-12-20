@@ -1,17 +1,16 @@
 // Import the required modules and classes.
-import Platform from '../game/platform.js';
 import Component from './component.js';
 
 // The Renderer class extends Component and handles the visual representation of a game object.
 class Renderer extends Component {
   // The constructor initializes the renderer component with optional color, width, height, and image.
-  constructor(color = 'white', width = 50, height = 50, image = null, offset = 75) {
+  constructor(color = 'white', width = 50, height = 50, image = null, animated = false) {
     super(); // Call the parent constructor.
     this.color = color; // Initialize the color.
     this.width = width; // Initialize the width.
     this.height = height; // Initialize the height.
     this.image = image; // Initialize the image.
-    this.offset = offset; // Initialize the offset.
+    this.animated = animated; // Initialize the animated property.
   }
 
   // The draw method handles rendering the game object on the canvas.
@@ -20,7 +19,11 @@ class Renderer extends Component {
     if (this.image && this.image.complete) {
       // Get the position of the game object.
       const x = this.gameObject.x;
-      let y = this.gameObject.y + (this.offset  - this.image.naturalHeight); // Offset the image by the offset property, which is the value each gameObject needs to display properly at ground level, i haven't found what causes diffenet gameObject's to require different calues, the player and enemies need 75 but platforms need 512.
+      let y = this.gameObject.y; 
+      // Since animated components render iamges of different sizes they wont always match the hitbox isze so we need to adjust the y position
+      if (this.animated) { 
+        y += 70 - this.image.naturalHeight;
+      }
       // Set the natural width and height of the source image to be the width and height that will be rendered.
       const w = this.image.naturalWidth;
       const h = this.image.naturalHeight;

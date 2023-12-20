@@ -31,10 +31,6 @@ class Collectible extends GameObject {
     // so the initial velocity, acceleration, and friction are all set to zero.
     this.addComponent(new Physics({ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }));
 
-    // Set the 'tag' property of this collectible. The tag is used to identify the type of GameObject
-    // (useful when checking collisions, for example)
-    this.tag = 'collectible';
-
     // Set the 'value' property of this collectible. This could be used to score points when the collectible is collected.
     this.value = 1;
   }

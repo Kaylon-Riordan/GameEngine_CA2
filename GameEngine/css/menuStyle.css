@@ -1,15 +1,17 @@
 body {
-    background-color: white; /* Red background color */
+    background-color: white; /* White background color */
     text-align: center;
     font-size: 100px;
     color: White;
     -webkit-text-stroke-width: 3px;
     -webkit-text-stroke-color: black;
 
+    /* set a background image to fill teh screen */
     background-image: url("../resources/images/menu.png");
     background-repeat: no-repeat;
     background-size: cover;
 
+    /* set style of menu's buttons */
     .button {
         background-color: black;
         color: #ffffff;

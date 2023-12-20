@@ -6,4 +6,9 @@ body {
     align-items: center;
     height: 100vh;
     background-color: #ff0000; /* Red background color */
+
+    /* set a background image to fill teh screen */
+    background-image: url("../resources/images/background.png");
+    background-repeat: no-repeat;
+    background-size: cover;
 }

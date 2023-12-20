@@ -16,7 +16,7 @@ class Player extends GameObject {
   // Constructor initializes the game object and add necessary components
   constructor(x, y) {
     super(x, y); // Call parent's constructor
-    this.renderer = new Renderer('blue', 75, 75, new Images('player/idle/tile001')); // Add renderer
+    this.renderer = new Renderer('blue', 30, 70, new Images('player/idle/tile001'), true); // Add renderer
     this.addComponent(this.renderer);
     this.addComponent(new Physics({ x: 0, y: 0 }, { x: 0, y: 0 })); // Add physics
     this.addComponent(new Input()); // Add input for handling user input
@@ -40,7 +40,7 @@ class Player extends GameObject {
     const physics = this.getComponent(Physics); // Get physics component
     const input = this.getComponent(Input); // Get input component
     const sound = this.getComponent(Sound); // Get sound component
-    this.renderer.image = this.animations.find((animation) => animation.isFor(this.state)).getImage();
+    this.renderer.image = this.animations.find((animation) => animation.isFor(this.state)).getImage(); // Set the image of the renderer to the current animation frame
 
     if(!this.isDead) {
     // Handle player movement
@@ -56,13 +56,13 @@ class Player extends GameObject {
 
       // Handle player sprinting
       if (input.isKeyDown('ShiftLeft')) {
-        physics.velocity.x *= 2;
+        physics.velocity.x *= 2; // Double the player's velocity
       }
 
       // Handle player jumping
       if (input.isKeyDown('Space') && physics.isOnPlatform) {
         this.startJump();
-        sound.playSound('jump');
+        sound.playSound('jump'); // Play jump sound using sound class
       }
 
       if (this.isJumping) {
@@ -70,7 +70,7 @@ class Player extends GameObject {
       }
     }
     else {
-      physics.velocity.x = 0;
+      physics.velocity.x = 0; // Stop player movement after death
     }
 
     // Handle collisions with collectibles
@@ -79,7 +79,7 @@ class Player extends GameObject {
       if (physics.isColliding(collectible.getComponent(Physics))) {
         this.collect(collectible);
         this.game.removeGameObject(collectible);
-        sound.playSound('collect');
+        sound.playSound('collect'); // Play collect sound using sound class
       }
     }
   
@@ -98,16 +98,16 @@ class Player extends GameObject {
 
     // Check if player has no lives left
     if (this.lives <= 0 ) {
-      this.isDead = true;
-      setTimeout(() => {
+      this.isDead = true; // Set player to dead
+      setTimeout(() => { // Wait 3 seconds before redirecting to death screen
         window.location.href = 'deathScreen.html';
-        alert('Final Score: ' + this.score);
-      }, 1000);
+        alert('Final Score: ' + this.score); // Display final score
+      }, 3000);
     }
 
     super.update(deltaTime);
 
-    // Set state for animations
+    // Set state for animations absed on what player is currently doing
     if (this.isDead) {
       this.state = CharacterStates.die;
     } else if (this.isInvulnerable) {
@@ -126,7 +126,7 @@ class Player extends GameObject {
     }
   }
 
-  createAnimations() {
+  createAnimations() { // Create animations for player, jump and die don't loop
     this.idleAnimation = new Animation("player/idle/tile00?",6,12,CharacterStates.idle);
     this.walkAnimation = new Animation("player/walk/tile00?",9,12,CharacterStates.walk);
     this.runAnimation = new Animation("player/run/tile00?",8,12,CharacterStates.run);
@@ -161,8 +161,8 @@ class Player extends GameObject {
     if (!this.isInvulnerable) {
       this.lives--;
       this.isInvulnerable = true;
-      sound.playSound('hurt');
-      // Make player vulnerable again after 2 seconds
+      sound.playSound('hurt'); // Play hurt sound using sound class
+      // Make player vulnerable again after 1 second
       setTimeout(() => {
         this.isInvulnerable = false;
       }, 1000);
@@ -183,22 +183,15 @@ class Player extends GameObject {
   }
 
   resetPlayerState() {
-    // Reset the player's state, repositioning it and nullifying movement
-    this.x = ((this.level.towers - 2) * 800) - 580;
+    // Reset the player's state, repositioning it to the furthest platform they had reached and nullifying movement
+    this.x = ((this.level.towers - 2) * 800) - 580; // Set player's x position to the furthest platform they had reached
     this.y = this.game.canvas.height - 600;
     this.getComponent(Physics).velocity = { x: 0, y: 0 };
     this.getComponent(Physics).acceleration = { x: 0, y: 0 };
     this.direction = 1;
     this.isJumping = false;
     this.jumpTimer = 0;
-    this.collidedWithEnemy();
-  }
-
-  resetGame() {
-    // Reset the game state, which includes the player's state
-    this.lives = 3;
-    this.score = 0;
-    this.resetPlayerState();
+    this.collidedWithEnemy(); // Make player take damage if they fall off the bottom of the screen
   }
 }
 

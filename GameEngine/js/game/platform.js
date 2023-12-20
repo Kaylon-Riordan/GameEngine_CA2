@@ -9,14 +9,14 @@ class Platform extends GameObject {
   
   // Define the constructor for the Platform class. It takes arguments for the x and y coordinates,
   // width, height, and color (with a default value of 'gray' if no color is provided)
-  constructor(x, y, width, height, color = 'balck') {
+  constructor(x, y, width, height, color = 'grey') {
     
     // Call the constructor of the superclass (GameObject) with the x and y coordinates
     super(x, y);
     
     // Add a Renderer component to this platform with the specified color, width, and height.
     // The Renderer component is responsible for rendering the platform on the canvas
-    this.addComponent(new Renderer(color, width, height, new Images('platform'), 680));
+    this.addComponent(new Renderer(color, width, height, new Images('platform')));
     
     // Add a Physics component to this platform, with initial velocity, acceleration, and forces set to zero.
     // Since platforms don't move, these values will remain zero throughout the gamea

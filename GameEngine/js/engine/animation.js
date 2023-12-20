@@ -5,6 +5,7 @@ import Images from './images.js';
 class Animation extends Component { 
     // create an array of images
     images = [];
+    // Constuctor takes in a file name template, the number of images, the timer count, the state that the animation is for, and whether or not the animation should loop
     constructor(fileNameTemplate, numberOfImages, timerCount, state, loop = true) {
         super();
         // Use a for loop to create a number of images that take the fileNameTemplate and replace the ? with the index of the image, then put the image into the array

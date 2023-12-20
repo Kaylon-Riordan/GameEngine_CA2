@@ -1,7 +1,7 @@
 // This class depends on the Component, which is a separate module and needs to be imported.
 import Component from './component.js';
 
-// The Input class is responsible for handling keyboard and gamepad input.
+// The Input class is responsible for handling keyboard input.
 class Input extends Component {
   // The constructor initializes a new instance of the Input class.
   constructor() {
