@@ -3,6 +3,7 @@ body {
     text-align: center;
     font-size: 100px;
     color: White;
+    /* code source: https://kinsta.com/blog/css-text-outline/ */
     -webkit-text-stroke-width: 3px;
     -webkit-text-stroke-color: black;
 

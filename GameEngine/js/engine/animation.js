@@ -26,7 +26,7 @@ class Animation extends Component {
         return this.state === state;
     }
 
-    // This will reset the animation to it's 1st frame
+    // This will reset the animation to it's 1st frameR
     reset() {
         this.imageIndex = 0;
     }

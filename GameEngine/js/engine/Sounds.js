@@ -13,6 +13,7 @@ class Sounds extends Component{
         if(loop) {
             audio.loop = true;
         }
+        // code source: https://stackoverflow.com/questions/9419263/how-to-play-audio
         // play the audio
         audio.play();
     }
